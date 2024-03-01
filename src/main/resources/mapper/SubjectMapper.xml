@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.lzj66.dao.SubjectDao">
+    <insert id="addSubject" keyProperty="id" useGeneratedKeys="true">
+        INSERT  INTO subject(question,answer,status, publicerId,difficult) VALUES(#{question}, #{answer}, #{status}, #{publicerId},#{difficult})
+    </insert>
+    <insert id="addSubjectList">
+        INSERT  INTO subject(question,answer,status, publicerId,difficult) VALUES
+        <foreach collection="subjects" item="subject" separator=",">
+            (#{subject.question}, #{subject.answer}, #{subject.status}, #{subject.publicerId},#{subject.difficult})
+        </foreach>
+    </insert>
+    <select id="getSubjectByDifficult" resultType="cn.lzj66.response.Question">
+        SELECT answer,question FROM subject where difficult = #{difficult} ORDER BY RAND() LIMIT #{count}
+    </select>
+</mapper>

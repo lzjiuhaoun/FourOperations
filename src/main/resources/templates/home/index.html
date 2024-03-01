@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人首页</title>
+    <link rel="stylesheet" href="bootstrap-3.3.7/css/bootstrap.min.css">
+    <style>
+        body{
+            font-size: 16px;
+        }
+        input[type=text]{
+            outline:none;
+            border:none;
+            border-bottom: 1px solid #c0c0c0;
+            background-color: transparent;
+        }
+        .box{
+            box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .03), 0 1px 4px 0 rgba(0, 0, 0, .048), 0 3px 1px -2px rgba(0, 0, 0, .12)
+        }
+        .box-shade{
+            border-radius: 5px;
+            border:1px solid #eeeeee;
+            box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .03), 0 1px 4px 0 rgba(0, 0, 0, .048), 0 3px 1px -2px rgba(0, 0, 0, .12)
+        }
+        .score-box{
+            clear: both;
+            width:400px;
+            line-height: 50px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .score{
+            color: rgb(224,54,54);
+            font-size: 20px;
+            border-bottom: 1px double rgb(224,54,54);
+        }
+        .title-box{
+            background: url("img/title.png") no-repeat;
+            background-size: 100% 100%;
+            height: 50px;
+            line-height: 40px;
+            text-align: center;
+            width: 300px;
+            margin: 0 auto;
+            font-weight: 600;
+            font-size: 20px;
+            color: rgb(245,245,245);
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="box">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">四则运算</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="col-xs-12" style="padding: 0 10%;">
+                        <table class="table box-shade">
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12" style="text-align: center">
+            <button class="btn-submit btn btn-info btn-lg" style="display:none;width: 20%">提交答案</button>
+            <button class="btn-refresh btn btn-success btn-lg" style="display:none;width: 20%">
+                <span class="glyphicon glyphicon-refresh" style="color: #ffffff;vertical-align: text-top"></span>
+                再来十题</button>
+        </div>
+    </div>
+    <div id="message" style="display: none;width: 400px;">
+        <p class="score-box">得分：<span class="score">100</span></p>
+        <p class="title-box">称号：<span class="title">出入江湖</span></p>
+        <!--<p>点评：<span class="word">太菜了吧</span></p>-->
+    </div>
+</body>
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="bootstrap-3.3.7/js/bootstrap.min.js"></script>
+<script src="layer/layer.js"></script>
+<script>
+ $(function () {
+    var answer= new Array();
+    $('.btn-submit').on('click',submit);
+    $('.btn-refresh').on('click',function () {
+        location.reload();
+    });
+    $.ajax({
+        url:'/getQuestion',
+        type:'post',
+        dataType:'json',
+        success:function (data) {
+           show(data);
+        },error:function () {
+            layer.msg('网络错误');
+        }
+    });
+    function show(data) {
+        var html = '';
+        html +='<thead class="text-center">\n' +
+            '                <tr>\n' +
+            '                    <th>题号</th>\n' +
+            '                    <th>题目</th>\n' +
+            '                    <th>作答</th>\n' +
+            '                    <th>结果</th>\n' +
+            '                    <th>参考答案</th>\n' +
+            '                </tr>\n' +
+            '                </thead>';
+        html +='<tbody>';
+        for(var i = 0 ;i<data.length;i++){
+            var item = data[i];
+            html +='<tr>'+
+                    '<td>'+item.id+'</td>'+
+                    '<td>'+item.question+'=</td>'+
+                    '<td><input type="text" class="answer" data-id='+item.id+'/></td>'+
+                    '<td class="result"></td>'+
+                    '<td class="right"></td>'+
+                '</tr>';
+            answer[i] = item.answer;
+        }
+        html +='</tbody>';
+        $('.table').empty().append(html);
+        $('.btn-submit').show();
+    }
+    function submit() {
+        layer.confirm("您确定要提交答案？",{
+            btn:['确定','取消']
+        },function () {
+            layer.closeAll();
+            var correct = 0;
+            $('.answer').each(function (index,value) {
+                var current = $('.answer').eq(index).val();
+                var html = '';
+                if(current === answer[index] ){
+                    html = '<span class="glyphicon glyphicon-ok" style="color: #007aff"></span>';
+                    correct++;
+                }else{
+                    html = '<span class="glyphicon glyphicon-remove" style="color: red"></span>';
+                }
+                var right = '<span style="color: #ccc">'+answer[index]+'</span>';
+                $('.right').eq(index).empty().append(right);
+                $('.result').eq(index).empty().append(html);
+            });
+            var word = judge(correct);
+            $('.score').text(correct * 10);
+            $('.title').text(word[0]);
+//            $('.word').text(word[1]);
+            message();
+            $('.btn-submit').hide();
+            $('.btn-refresh').show();
+
+        },function () {
+           layer.closeAll();
+        });
+    }
+    function judge(correct) {
+        var word = new Array(2);
+        switch (correct){
+            case 0:
+                word[0] = '初入江湖';
+                word[1] = '菜鸟，一题都不会';
+                break;
+            case 1:
+                word[0] = '小有名气';
+                word[1] = '再认真点就全错了';
+                break;
+            case 2:
+                word[0] = '名动一方';
+                word[1] = '要加油啊';
+                break;
+            case 3:
+                word[0] = '江湖少侠';
+                word[1] = '怕是遇到了一些困难';
+                break;
+            case 4:
+                word[0] = '江湖豪侠';
+                word[1] = '这些题似乎有点难';
+                break;
+            case 5:
+                word[0] = '武林盟主';
+                word[1] = '可以可以';
+                break;
+            case 6:
+                word[0] = '一代宗师';
+                word[1] = '比一般人要强了';
+                break;
+            case 7:
+                word[0] = '超凡入圣';
+                word[1] = '已经是不错的成绩了';
+                break;
+            case 8:
+                word[0] = '返璞归真';
+                word[1] = '还是要认真呐';
+                break;
+            case 9:
+                word[0] = '笑傲江湖';
+                word[1] = '就差一点就全对了';
+                break;
+            case 10:
+                word[0] = '独孤求败';
+                word[1] = '但求易错，再来10题';
+                break;
+            default:
+                word[0] = '初学弟子';
+                word[1] = '还是先好好学习吧';
+                break;
+        }
+        return word;
+    }
+    function message() {
+        layer.open({
+            type: 1,
+            title:'成绩报告',
+            skin: 'layui-layer-demo', //样式类名
+            closeBtn: true, //不显示关闭按钮
+            anim: 5,//出现动画
+            area:['400px','300px'],
+            shadeClose: true, //开启遮罩关闭
+            content: $('#message')
+        });
+    }
+ });
+</script>
+</html>

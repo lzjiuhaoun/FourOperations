@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.lzj66.dao.StudentDao">
+    <!--目的：为Dao接口方法提供SQL语句-->
+
+    <!--映射实体对象-->
+    <resultMap id="StudentResultMap" type="cn.lzj66.entity.Student">
+        <id property="id" column="id" />
+        <result property="classId" column="classId"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="headUrl" column="headUrl"/>
+        <result property="email" column="email"/>
+        <result property="mobile" column="mobile" />
+        <result property="score" column="score" />
+        <result property="status" column="status" />
+        <result property="createTime" column="createTime" />
+        <association property="classes" javaType="cn.lzj66.entity.Classes">
+            <id property="id" column="b_id" />
+            <result property="uuid" column="b_uuid" />
+            <result property="name" column="b_name" />
+            <result property="status" column="b_status" />
+            <result property="createTime" column="b_createTime" />
+        </association>
+    </resultMap>
+    <resultMap id="StudentResultMap2" type="cn.lzj66.entity.Student">
+        <id property="id" column="id" />
+        <result property="classId" column="classId"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="headUrl" column="headUrl"/>
+        <result property="email" column="email"/>
+        <result property="mobile" column="mobile" />
+        <result property="score" column="score" />
+        <result property="status" column="status" />
+        <result property="createTime" column="createTime" />
+        <association property="classes" column="classId" select="cn.lzj66.dao.ClassesDao.getClassesById"/>
+    </resultMap>
+    <select id="getStudentById2" resultMap="StudentResultMap2">
+        SELECT * FROM student WHERE id = #{id}
+    </select>
+    <select id="getStudentById" resultMap="StudentResultMap">
+        SELECT a.*,b.id as b_id,b.uuid as b_uuid,b.name as b_name,b.status as b_status,b.createTime as b_createTime
+        FROM student as a left JOIN classes as b on a.classId = b.id
+        WHERE a.id = #{id} and a.status = 1
+    </select>
+    <select id="getStudentByName" resultMap="StudentResultMap">
+        SELECT a.*,b.id as b_id,b.uuid as b_uuid,b.name as b_name,b.status as b_status,b.createTime as b_createTime
+        FROM student as a left JOIN classes as b on a.classId = b.id
+        WHERE a.username = #{name} and a.status = 1
+    </select>
+    <select id="getSameStudent" resultType="cn.lzj66.entity.Student">
+        SELECT * FROM student where classId = #{classId}
+    </select>
+    <insert id="addStudent" useGeneratedKeys="true" keyProperty="id">
+        INSERT  INTO student(username,password,headUrl,mobile,email) VALUES (#{username},#{password},#{headUrl},#{mobile},#{email})
+    </insert>
+    <update id="updateClassIdById">
+        UPDATE student SET classId = #{classId} WHERE id = #{id}
+    </update>
+    <update id="updateScoreById">
+        UPDATE student SET score = score + #{score} WHERE id = #{id}
+    </update>
+</mapper>

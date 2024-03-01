@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>作业详情</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+    <link rel="stylesheet" href="../mui/css/mui.min.css">
+    <style type="text/css">
+        body{
+            font-family: "Microsoft YaHei","SimSun";
+            font-size: 16px;
+        }
+        .mui-content ul{
+            list-style: none;
+            padding: 4px;
+        }
+        .mui-content  div{
+            width: 100%;
+            height: 48px;
+            margin-bottom: 5px;
+        }
+        .mui-content .real .question,.mui-content .real .answer{
+            margin: 0px;
+            height: 28px;
+
+            border: 0px solid beige;
+        }
+        .mui-content .real .answer{
+            width: 30%;
+            border-bottom: 1px solid #000;
+            background-color:transparent;
+            outline:none;
+            border-radius:0;
+            text-align: center;
+        }
+        .mui-content .real .question{
+            width: 50%;
+            border-bottom: 1px solid #000;
+            background-color:transparent;
+            outline:none;
+            border-radius:0;
+            text-align: center;
+        }
+        .mui-btn-block{
+            width: 90%;
+            margin: 0 auto 10px auto;
+            padding: 10px 0;
+        }
+        .mui-content .real .result{
+            color: #007aff;
+            width: 20%;
+            background: transparent;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+<div class="mui-content">
+    <header class="mui-bar mui-bar-nav">
+        <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+        <h1 class="mui-title">作业详情</h1>
+
+    </header>
+    <div style="padding-top: 44px">
+        <ul>
+            <li th:each="item,itemStat:${questions}">
+                <div class="real">
+                    <span th:text="${itemStat.index+1}"></span>.&nbsp;&nbsp;
+                    <input class="question" th:value="${item.question}" />
+                    <span>=</span>
+                    <!--<label for="" class="equal"></label>-->
+                    <input type="text" class="answer" th:value="${item.answer}"/>
+                    <span></span>
+                </div>
+            </li>
+        </ul>
+        <div style="display: none">
+            <input id="title" type="hidden" th:value="${task.title}">
+            <input id="count" type="hidden" th:value="${task.count}">
+            <input id="classId" type="hidden" th:value="${task.classId}">
+            <input id="description" type="hidden" th:value="${task.description}">
+            <input id="endTime" type="hidden" th:value="${task.endTime}">
+        </div>
+        <button id="smt" class="mui-btn mui-btn-block mui-btn-primary" style="padding: 10px 0;">立即发布</button>
+    </div>
+</div>
+</body>
+<script src="../js/jquery-3.3.1.min.js"></script>
+<script src="../layer/layer.js"></script>
+<script src="../mui/js/mui.min.js"></script>
+<script>
+    var question = [];
+    var answer = [];
+    var index;
+    var url = "/teacher/createTask";
+    var jumpUrl = "/teacher/index";
+    $(function () {
+        $('#smt').on('tap',submit);
+
+        function submit() {
+            $('.question').each(function (index,value) {
+                var temp = $(this).val();
+                if(temp === ''){
+                    mui.alert('第'+(index+1)+'题题目为空');
+                    return;
+                }
+                question[index] = temp;
+            });
+            $('.answer').each(function (index,value) {
+                var temp = $(this).val();
+                if(temp === ''){
+                    mui.alert('第'+(index+1)+'题答案为空');
+                    return;
+                }
+                answer[index] = temp;
+            });
+            var data = {
+                title:$('#title').val(),
+                count:$('#count').val(),
+                description:$('#description').val(),
+                classId:$('#classId').val(),
+                endTime:$('#endTime').val(),
+                questionJson:JSON.stringify({question:question,answer:answer})
+            };
+            $.ajax({
+                url:url,
+                type:"post",
+                data:data,
+                dataType:'json',
+                beforeSend:function () {
+                    index = layer.load(0, {shade: false});
+                }, complete:function () {
+                    layer.close(index);
+                },success:function (res) {
+                    console.log(res);
+                    if(res.success === true){
+                        layer.msg(res.message);
+                        setTimeout(function () {
+                            location.href = jumpUrl;
+                        },1500);
+                    }else if(res.success === false){
+                        layer.alert(res.message)
+                    }
+                },error:function (e) {
+                    console.log(e);
+                }
+            });
+        }
+    });
+</script>
+</html>

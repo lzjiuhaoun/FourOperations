@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>作业详情</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+    <link rel="stylesheet" href="../mui/css/mui.min.css">
+    <style type="text/css">
+        body{
+            font-family: "Microsoft YaHei","SimSun";
+            font-size: 16px;
+        }
+        .mui-content ul{
+            list-style: none;
+            padding: 4px;
+        }
+        .mui-content  div{
+            width: 100%;
+            height: 48px;
+            margin-bottom: 5px;
+        }
+        .mui-content .real .shizi,.mui-content .real .answer{
+            margin: 0px;
+            height: 28px;
+            width: 30%;
+            border: 0px solid beige;
+        }
+        .mui-content .real .answer{
+            width: 20%;
+            border-bottom: 1px solid #000;
+            background-color:transparent;
+            outline:none;
+            border-radius:0;
+            text-align: center;
+        }
+        .mui-btn-block{
+            width: 90%;
+            margin: 0 auto 10px auto;
+            padding: 10px 0;
+        }
+        .mui-content .real .result{
+            color: #007aff;
+            width: 20%;
+            background: transparent;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+<div class="mui-content">
+    <header class="mui-bar mui-bar-nav">
+        <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+        <h1 class="mui-title">作业详情</h1>
+
+    </header>
+    <div style="padding-top: 44px">
+        <ul>
+            <li th:each="item,itemStat:${items}">
+                <div class="real" th:if="${item.correct == 0}" style="color: red ">
+                    <span th:text="${itemStat.index+1}"></span>.&nbsp;&nbsp;
+                    <span class="question" th:text="${item.question}"></span>
+                    <span>=</span>
+                    <!--<label for="" class="equal"></label>-->
+                    <input type="text" readonly class="answer" th:value="${item.result}"/>
+                    <span></span>
+                    <input type="text" readonly class="result" style="color: #007aff" th:value="${item.answer}">
+                </div>
+                <div class="real" th:if="${item.correct == 1}">
+                    <span th:text="${itemStat.index+1}"></span>.&nbsp;&nbsp;
+                    <span class="question" th:text="${item.question}"></span>
+                    <span>=</span>
+                    <!--<label for="" class="equal"></label>-->
+                    <input type="text" readonly class="answer" th:value="${item.result}"/>
+                    <span></span>
+                    <input type="text" readonly class="result" style="color: #007aff" th:value="${item.answer}">
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<span th:include="public/include::script"></span>
+</body>
+<script>
+    var url = '/student/complete';
+    var index;
+    var notDo = [];
+    var i=0;//记录没有做的题目的序号
+    var j=0;//记录，记录题号的序号
+    var result = [];//记录答题结果
+    var answer = [];//记录答案
+    var question = [];//记录题目
+    var taskId;//记录任务Id
+    var confirm;
+    $(function () {
+        $('#submit').on('click',submit);
+    });
+    function submit() {
+        $('.answer').each(function (index,value) {
+            var val = $(this).val();
+            if(val === '' || val.length ===0){
+                notDo[i++]= (index + 1);
+            }
+            result[j++] =val;
+        });
+        j = 0;
+        $('.result').each(function (index,value) {
+            var val = $(this).val();
+            answer[j++] =val;
+        });
+        j = 0;
+        $('.question').each(function (index,value) {
+            var val = $(this).text();
+            question[j++] =val;
+        });
+        taskId = $('.id').eq(0).val();
+        if(notDo.length >= 5){
+            layer.alert("做题数目必须大于6题");
+            notDo = [];
+            i=0;//记录没有做的题目的序号
+            j=0;//记录，记录题号的序号
+            result = [];//记录答题结果
+            answer = [];//记录答案
+            question = [];
+            return;
+        }
+        if(notDo.length >= 1){
+            confirm = layer.confirm("第"+notDo.join(',')+'没有做。是否提交？', {
+                btn: ['确定','取消'] //按钮
+            }, function(){
+                ajax();
+            }, function(){
+                notDo = [];
+                i=0;//记录没有做的题目的序号
+                j=0;//记录，记录题号的序号
+                result = [];//记录答题结果
+                answer = [];//记录答案
+                question = [];
+                layer.close(confirm);
+            });
+        }else{
+            confirm = layer.confirm('是否立即提交？', {
+                btn: ['确定','取消'] //按钮
+            }, function(){
+                ajax();
+            }, function(){
+                notDo = [];
+                i=0;//记录没有做的题目的序号
+                j=0;//记录，记录题号的序号
+                result = [];//记录答题结果
+                answer = [];//记录答案
+                question = [];
+                layer.close(confirm);
+            });
+        }
+
+    }
+    function ajax() {
+        layer.close(confirm);
+        var data = {
+            question:question,
+            answer:answer,
+            result:result,
+            taskId:taskId
+        };
+        console.log(data);
+        $.ajax({
+            url:url,
+            type:"post",
+            data:JSON.stringify(data),
+            contentType:'application/json;charset=UTF-8',
+            dataType:'json',
+            beforeSend:function () {
+                index = layer.load(0, {shade: false});
+            }, complete:function () {
+                layer.close(index);
+            },success:function (res) {
+                console.log(res);
+                if(res.success === true){
+                    layer.msg(res.message);
+                    dealData();
+                }else if(res.success === false){
+                    layer.alert(res.message)
+                }
+            },error:function (e) {
+                console.log(e);
+            }
+        });
+    }
+    function dealData() {
+        for (var k = 0;k<question.length;k++){
+            console.log($('.question').eq(k));
+            $('.result').eq(k).attr('type','text');
+            if(answer[k] !== result[k]){
+                $('.question').eq(k).css({color:'red'});
+                $('.answer').eq(k).css({color:'red'});
+            }else{
+
+            }
+        }
+    }
+</script>
+</html>

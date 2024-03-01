@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+    <link rel="stylesheet" href="../mui/css/mui.min.css">
+    <style>
+        .title{
+            margin: 20px 15px 10px;
+            color: #6d6d72;
+            font-size: 15px;
+        }
+
+        .oa-contact-cell.mui-table .mui-table-cell {
+            padding: 11px 0;
+            vertical-align: middle;
+        }
+
+        .oa-contact-cell {
+            position: relative;
+            margin: -11px 0;
+        }
+
+        .oa-contact-avatar {
+            width: 75px;
+        }
+        .oa-contact-avatar img {
+            border-radius: 50%;
+        }
+        .oa-contact-content {
+            width: 100%;
+        }
+        .oa-contact-name {
+            margin-right: 20px;
+        }
+        .oa-contact-name, oa-contact-position {
+            float: left;
+        }
+        img{
+            width: auto;
+            height: auto;
+            max-height: 80%;
+            max-width: 80%;
+            z-index:1 ;
+        }
+    </style>
+</head>
+<body>
+<div class="mui-content">
+    <header class="mui-bar mui-bar-nav">
+        <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+        <h1 class="mui-title">班级详情</h1>
+    </header>
+    <div class="title class-title" style="padding-top: 44px;clear: both">
+        <span th:text="${name}"></span>
+        <span class="uuid" th:text="${uuid}" style="float: right"></span>
+    </div>
+    <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed my-class">
+        <li class="mui-table-view-cell" th:each="student:${students}">
+            <div class="mui-slider-cell">
+                <div class="oa-contact-cell mui-table">
+                    <div class="oa-contact-avatar mui-table-cell">
+                        <img th:src="${student.headUrl}"/>
+                    </div>
+                    <div class="oa-contact-content mui-table-cell">
+                        <div class="mui-clearfix">
+                            <h4 class="oa-contact-name" th:text="${student.username}"></h4>
+                            <span class="oa-contact-position mui-h6">同学</span>
+                        </div>
+                        <p class="oa-contact-email mui-h6" th:text="${student.email}">
+
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>
+</body>
+<script src="../js/jquery-3.3.1.min.js"></script>
+<script src="../layer/layer.js"></script>
+<script src="../mui/js/mui.min.js"></script>
+<script src="../js/clipboard.min.js"></script>
+<script>
+    var text = $('.uuid').text();
+    console.log(text);
+    var clipboard = new ClipboardJS('.uuid', {
+        text: function() {
+            return text;
+        }
+    });
+    clipboard.on('success', function(e) {
+        mui.toast('复制到粘贴板成功');
+    });
+
+    clipboard.on('error', function(e) {
+        mui.toast('复制到粘贴板失败');
+    });
+</script>
+</html>

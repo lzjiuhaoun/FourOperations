@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="添加作业"></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+    <link rel="stylesheet" href="../mui/css/mui.min.css">
+    <link rel="stylesheet" href="../mui/css/mui.picker.min.css">
+    <link rel="stylesheet" href="../mui/css/mui.poppicker.css">
+    <style>
+    </style>
+</head>
+
+<body>
+<div class="mui-content">
+    <header class="mui-bar mui-bar-nav">
+        <h1 class="mui-title">添加作业</h1>
+        <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+    </header>
+    <div class="mui-content" style="padding-top: 44px;">
+        <form class="mui-input-group" method="post" action="/teacher/createQuestion" onsubmit="return check();">
+            <div class="mui-input-row">
+                <label>作业标题：</label>
+                <input type="text" name="title" class="mui-input-clear" placeholder="请输入标题" data-input-clear="1">
+            </div>
+            <div class="mui-input-row">
+                <label>作业数量：</label>
+                <input type="number" name="count" min="1" max="20" class="mui-input-clear" placeholder="请输入数量" data-input-clear="1">
+            </div>
+            <div class="mui-input-row">
+                <label>难度系数：</label>
+                <input type="text" min="1" max="20" class="mui-input-clear difficult" placeholder="点击选择" data-input-clear="1">
+                <input id="difficult" name="difficult" type="hidden">
+            </div>
+            <div class="mui-input-row">
+                <label>出题方式：</label>
+                <input type="text" min="1" max="20" class="mui-input-clear type" placeholder="点击选择" data-input-clear="1">
+                <input id="type" name="type" type="hidden">
+            </div>
+            <div class="mui-input-row">
+                <label>截止日期：</label>
+                <input id="endTime" name="endTime" type="text" class="mui-input-clear" placeholder="点击选择" data-options="{}">
+            </div>
+            <div class="mui-input-row">
+                <label>选择班级：</label>
+               <input id="show-class" type="text" placeholder="点击选择"/>
+               <input id="classId" name="classId" type="hidden">
+            </div>
+            <div class="mui-input-row">
+                <label>题目描述：</label>
+            </div>
+            <textarea id="desc" name="description" rows="9" cols="9" style="border-bottom: 1px solid #c8c7cc;">
+            如果你无法简洁的表达你的想法，那只说明你还不够了解它。-- 阿尔伯特·爱因斯坦
+            </textarea>
+            <button id="login" class="mui-btn mui-btn-block mui-btn-primary" style="padding: 10px 0;">立即提交</button>
+        </form>
+        <span th:text="${str}" id="str" style="display: none"></span>
+    </div>
+</div>
+</body>
+<script src="../js/jquery-3.3.1.min.js"></script>
+<script src="../layer/layer.js"></script>
+<script src="../mui/js/mui.min.js"></script>
+<script src="../mui/js/mui.picker.min.js"></script>
+<script src="../mui/js/mui.poppicker.js"></script>
+<script>
+    (function ($,mui) {
+        mui.init();
+        $('#endTime').on('tap',function () {
+            var _self = this;
+            _self.picker = new mui.DtPicker();
+            _self.picker.show(function (res) {
+                $('#endTime').val(res);
+                console.log(res);
+            });
+        });
+        var userPicker = new mui.PopPicker();
+        userPicker.setData(JSON.parse($('#str').text()));
+        $('#show-class').on('click',function () {
+            userPicker.show(function(items) {
+                console.log(items[0]);
+                $('#show-class').val(items[0].text);
+                $('#classId').val(items[0].value)
+                //返回 false 可以阻止选择框的关闭
+                //return false;
+            });
+        });
+        var difficult = new mui.PopPicker();
+        difficult.setData([{
+            value: '1',
+            text: '一级'
+        }, {
+            value: '2',
+            text: '二级'
+        },{
+            value: '3',
+            text: '三级'
+        },{
+            value: '4',
+            text: '四级'
+        },{
+            value: '5',
+            text: '五级'
+        }]);
+        $('.difficult').on('click',function () {
+            difficult.show(function(items) {
+                console.log(items[0]);
+                $('.difficult').val(items[0].text);
+                $('#difficult').val(items[0].value)
+                //返回 false 可以阻止选择框的关闭
+                //return false;
+            });
+        });
+        var type = new mui.PopPicker();
+        type.setData([{
+            value: '1',
+            text: '随机出题'
+        },{
+            value: '2',
+            text: '题库选题'
+        }]);
+        $('.type').on('click',function () {
+            type.show(function(items) {
+                console.log(items[0]);
+                $('.type').val(items[0].text);
+                $('#type').val(items[0].value)
+                //返回 false 可以阻止选择框的关闭
+                //return false;
+            });
+        });
+    })($,mui);
+    function check() {
+        var title = $('input[name=title]').val();
+        if(title === ''){
+            mui.alert('请输入标题');
+            return false;
+        }
+        var number = $('input[name=count]').val();
+        if(number === ''){
+            mui.alert('请输入数量');
+            return false;
+        }
+        var difficult = $('input[name=difficult]').val();
+        if(difficult === ''){
+            mui.alert('请选择难度');
+            return false;
+        }
+        var type = $('input[name=type]').val();
+        if(type === ''){
+            mui.alert('请选择类型');
+            return false;
+        }
+        var endTime = $('input[name=endTime]').val();
+        if(endTime === ''){
+            mui.alert('请选择日期');
+            return false;
+        }
+        var classId = $('input[name=classId]').val();
+        if(classId === ''){
+            mui.alert('请选择班级');
+            return false;
+        }
+
+        var description = $('#desc').val();
+        if(description === ''){
+            mui.alert('请输入描述');
+            return false;
+        }
+        return true;
+    }
+</script>
+</html>

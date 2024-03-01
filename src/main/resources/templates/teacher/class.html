@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title th:text="班级管理"></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+    <link rel="stylesheet" href="../mui/css/mui.min.css">
+    <style>
+    </style>
+</head>
+
+<body>
+<div class="mui-content">
+    <nav th:include="teacher/tabbar::nav-class" class="mui-bar mui-bar-tab"></nav>
+    <header class="mui-bar mui-bar-nav">
+        <h1 class="mui-title">班级列表</h1>
+        <a class="mui-icon mui-icon-plus mui-pull-right" th:href="@{'/teacher/addClass'}"></a>
+    </header>
+    <div style="padding-top:44px;">
+        <div class="mui-card">
+            <ul class="mui-table-view">
+                <li class="mui-table-view-cell" th:each="item:${classes}">
+                    <a class="mui-navigate-right" th:href="@{'/teacher/classDetail?classId='+${item.id}}+'&name='+${item.name}+'&uuid='+${item.uuid}">
+                        <span class="mui-badge mui-badge-danger" th:text="${item.count} ? ${item.count} : 0"></span>
+                        <span th:text="${item.name}"></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+<script src="../js/jquery-3.3.1.min.js"></script>
+<script src="../layer/layer.js"></script>
+</html>

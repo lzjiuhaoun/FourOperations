@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="教师首页"></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+    <link rel="stylesheet" href="../mui/css/mui.min.css">
+    <style>
+
+    </style>
+</head>
+
+<body>
+<div class="mui-content">
+    <nav th:include="teacher/tabbar::nav-index" class="mui-bar mui-bar-tab"></nav>
+    <header class="mui-bar mui-bar-nav">
+        <h1 class="mui-title">作业列表</h1>
+        <a th:href="@{'/teacher/addTask'}" class="mui-icon mui-icon-plus mui-pull-right"></a>
+    </header>
+    <div style="padding-top:44px;">
+        <a th:each="item:${tasks}" th:href="@{'/task/teacherTaskItem?taskId='+${item.id}}" >
+            <div class="mui-card">
+                <div class="mui-card-header" th:text="${item.title}"></div>
+                <div class="mui-card-content">
+                    <div class="mui-card-content-inner" th:text="${item.description}"></div>
+                </div>
+                <div class="mui-card-footer">
+                    <span th:text="@{'题数：'+${item.count}}"></span>
+                    <span style="text-align: right" th:text="@{'截止日期：'+${item.createTime}}"></span>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+</body>
+<script src="../js/jquery-3.3.1.min.js"></script>
+<script src="../layer/layer.js"></script>
+</html>

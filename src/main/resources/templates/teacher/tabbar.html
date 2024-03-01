@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>底栏</title>
+</head>
+<body>
+<nav th:fragment="nav-index" class="mui-bar mui-bar-tab">
+    <a class="my-index mui-tab-item mui-active" href="/teacher/index">
+        <span class="mui-icon mui-icon-home"></span>
+        <span class="mui-tab-label">首页</span>
+    </a>
+
+    <a class="mui-tab-item" href="/teacher/class">
+        <span class="mui-icon mui-icon-personadd-filled"></span>
+        <span class="mui-tab-label">班级</span>
+    </a>
+    <a class="mui-tab-item" href="/teacher/subject">
+    <span class="mui-icon mui-icon-navigate">
+        <span class="my-message"></span>
+    </span>
+        <span class="mui-tab-label">出题</span>
+    </a>
+    <a class="mui-tab-item" href="/teacher/myself">
+        <span class="mui-icon mui-icon-contact"></span>
+        <span class="mui-tab-label">我的</span>
+    </a>
+</nav>
+<nav th:fragment="nav-class" class="mui-bar mui-bar-tab">
+    <a class="my-index mui-tab-item" href="/teacher/index">
+        <span class="mui-icon mui-icon-home"></span>
+        <span class="mui-tab-label">首页</span>
+    </a>
+
+    <a class="mui-tab-item" href="/teacher/class">
+        <span class="mui-icon mui-icon-personadd-filled mui-active"></span>
+        <span class="mui-tab-label">班级</span>
+    </a>
+    <a class="mui-tab-item" href="/teacher/subject">
+    <span class="mui-icon mui-icon-navigate">
+        <span class="my-message"></span>
+    </span>
+        <span class="mui-tab-label">出题</span>
+    </a>
+    <a class="mui-tab-item" href="/teacher/myself">
+        <span class="mui-icon mui-icon-contact"></span>
+        <span class="mui-tab-label">我的</span>
+    </a>
+</nav>
+<nav th:fragment="nav-subject" class="mui-bar mui-bar-tab">
+    <a class="my-index mui-tab-item" href="/teacher/index">
+        <span class="mui-icon mui-icon-home"></span>
+        <span class="mui-tab-label">首页</span>
+    </a>
+
+    <a class="mui-tab-item" href="/teacher/class">
+        <span class="mui-icon mui-icon-personadd-filled"></span>
+        <span class="mui-tab-label">班级</span>
+    </a>
+    <a class="mui-tab-item" href="/teacher/subject">
+    <span class="mui-icon mui-icon-navigate mui-active" >
+        <span class="my-message"></span>
+    </span>
+        <span class="mui-tab-label">出题</span>
+    </a>
+    <a class="mui-tab-item" href="/teacher/myself">
+        <span class="mui-icon mui-icon-contact"></span>
+        <span class="mui-tab-label">我的</span>
+    </a>
+</nav>
+<nav th:fragment="nav-self" class="mui-bar mui-bar-tab">
+    <a class="my-index mui-tab-item" href="/teacher/index">
+        <span class="mui-icon mui-icon-home"></span>
+        <span class="mui-tab-label">首页</span>
+    </a>
+
+    <a class="mui-tab-item" href="/teacher/class">
+        <span class="mui-icon mui-icon-personadd-filled"></span>
+        <span class="mui-tab-label">班级</span>
+    </a>
+    <a class="mui-tab-item" href="/teacher/subject">
+    <span class="mui-icon mui-icon-navigate" >
+        <span class="my-message"></span>
+    </span>
+        <span class="mui-tab-label">出题</span>
+    </a>
+    <a class="mui-tab-item" href="/teacher/myself">
+        <span class="mui-icon mui-icon-contact mui-active"></span>
+        <span class="mui-tab-label">我的</span>
+    </a>
+</nav>
+</body>
+</html>

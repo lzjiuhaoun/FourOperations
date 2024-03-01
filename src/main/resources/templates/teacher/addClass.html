@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="添加班级"></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+    <link rel="stylesheet" href="../mui/css/mui.min.css">
+    <link rel="stylesheet" href="../mui/css/mui.picker.min.css">
+    <link rel="stylesheet" href="../mui/css/mui.poppicker.css">
+    <style>
+    </style>
+</head>
+
+<body>
+<div class="mui-content">
+    <header class="mui-bar mui-bar-nav">
+        <h1 class="mui-title">添加班级</h1>
+        <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+    </header>
+    <div class="mui-content" style="padding-top: 44px;">
+        <form class="mui-input-group" onsubmit="return false">
+            <div class="mui-input-row">
+                <label>班级名字：</label>
+                <input type="text" id="name" name="name" class="mui-input-clear" placeholder="请输入标题" data-input-clear="1">
+            </div>
+            <div class="mui-input-row">
+                <label>班级描述：</label>
+            </div>
+            <textarea id="desc" name="description" rows="9" cols="9" style="border-bottom: 1px solid #c8c7cc;">
+            如果你无法简洁的表达你的想法，那只说明你还不够了解它。-- 阿尔伯特·爱因斯坦
+            </textarea>
+            <button id="submit" class="mui-btn mui-btn-block mui-btn-primary" style="padding: 10px 0;">立即提交</button>
+        </form>
+    </div>
+</div>
+</body>
+<script src="../js/jquery-3.3.1.min.js"></script>
+<script src="../layer/layer.js"></script>
+<script src="../mui/js/mui.min.js"></script>
+
+<script>
+    var url = "/teacher/createClass";
+    var jumpUrl = "/teacher/class";
+    var index;
+    $(function () {
+        $('#submit').on('tap',submit);
+        function submit() {
+            if(check() === false){
+                return;
+            }
+            var data = {
+                name:$('#name').val(),
+                description:$('#desc').val()
+            };
+            $.ajax({
+                url:url,
+                type:"post",
+                data:data,
+                dataType:'json',
+                beforeSend:function () {
+                    index = layer.load(0, {shade: false});
+                }, complete:function () {
+                    layer.close(index);
+                },success:function (res) {
+                    console.log(res);
+                    if(res.success === true){
+                        layer.msg(res.message);
+                        setTimeout(function () {
+                            location.href = jumpUrl;
+                        },1500);
+                    }else if(res.success === false){
+                        layer.alert(res.message)
+                    }
+                },error:function (e) {
+                    console.log(e);
+                }
+            });
+        }
+    });
+    function check() {
+        var title = $('input[name=name]').val();
+        if(title === ''){
+            mui.alert('请输入标题');
+            return false;
+        }
+        var description = $('#desc').val();
+        if(description === ''){
+            mui.alert('请输入描述');
+            return false;
+        }
+        return true;
+    }
+</script>
+</html>

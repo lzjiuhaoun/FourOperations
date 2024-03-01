@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!--<head th:include="public/include::head('学生首页')"></head>-->
+<head>
+    <meta charset="UTF-8">
+    <title th:text="学生首页"></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+    <link rel="stylesheet" href="../mui/css/mui.min.css">
+    <style>
+        .title{
+            margin: 20px 15px 10px;
+            color: #6d6d72;
+            font-size: 15px;
+        }
+
+        .oa-contact-cell.mui-table .mui-table-cell {
+            padding: 11px 0;
+            vertical-align: middle;
+        }
+
+        .oa-contact-cell {
+            position: relative;
+            margin: -11px 0;
+        }
+
+        .oa-contact-avatar {
+            width: 75px;
+        }
+        .oa-contact-avatar img {
+            border-radius: 50%;
+        }
+        .oa-contact-content {
+            width: 100%;
+        }
+        .oa-contact-name {
+            margin-right: 20px;
+        }
+        .oa-contact-name, oa-contact-position {
+            float: left;
+        }
+        .gg{
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        img{
+            width: auto;
+            height: auto;
+            max-height: 100%;
+            max-width: 100%;
+            z-index:1 ;
+        }
+        /*以下头像区*/
+        .touxiang{
+            position: absolute;/*z-dex只在定位起作用，并且不浮动*/
+            /*float: left;*/
+            width: 60px;
+            height: 60px;
+            background-image: url(../img/man_head.jpg);
+
+            background-size: cover;
+            display: block;
+            border-radius: 50%;
+            -webkit-border-radius: 50px;
+            -moz-border-radius: 50px;;
+            /*box-shadow: 2px 2px 2px white;*//*阴影*/
+            border: 1px solid white;
+            z-index: 2;
+            margin: -70px 30px;
+        }
+        .xxx{
+            /*float: left;*/
+            color: white;
+            margin: -50px 100px;
+            z-index: 3;
+        }
+        .inter{
+            width: 200px;
+            height: 200px;
+            margin: 100px 80px;
+        }
+        .body1 .inter ul{
+            list-style: none;
+        }
+        .body1 .inter ul li{
+            float: left;
+            width: 200px;
+            height: 20px;
+            margin: 8px;
+            color: green;
+        }
+        .complete{
+            color: green;
+        }
+        .continue{
+            color: #007aff;
+        }
+        .point::before{
+            content: " ";
+            border: 3px solid red;/*设置红色*/
+            border-radius:3px;/*设置圆角*/
+            position: absolute;
+            z-index: 1000;
+            right: 0%;
+            margin-right: 10px;
+            margin-top: -2px;
+        }
+    </style>
+</head>
+
+
+<body>
+<!--<header class="mui-bar mui-bar-nav">-->
+    <!--<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>-->
+    <!--<h1 class="mui-title">底部选项卡-div模式</h1>-->
+<!--</header>-->
+<nav th:include="student/tabbar::nav" class="mui-bar mui-bar-tab"></nav>
+<div class="mui-content">
+    <div th:include="student/task::task" id="tabbar" class="mui-control-content mui-active"></div>
+    <div th:include="student/class::class" id="tabbar-with-contact" class="mui-control-content"></div>
+    <div th:include="student/message::message" id="tabbar-with-chat" class="mui-control-content"></div>
+    <div th:include="student/myself::myself" id="tabbar-with-map" class="mui-control-content"></div>
+</div>
+
+<span th:include="public/include::script"></span>
+<script type="text/javascript" src="https://cdn.goeasy.io/goeasy.js"></script>
+<script>
+    var taskUrl = "/task/getTask";
+    var cassUrl = '/class/getSameStudent';
+    var joinClass = '/student/joinClass';
+    var username = sessionStorage.getItem('username');
+    var studentData = JSON.parse(sessionStorage.getItem(username));
+    $(function () {
+        init();
+        goeasy();
+    });
+    function init() {
+        $('.touxiang').css("background-image",studentData.headUrl);
+        $('.my-username').text(username);
+        //获取作业列表
+        $.ajax({
+            url:taskUrl,
+            type:"post",
+            data:{studentId:studentData.id,classId:studentData.classId},
+            dataType:'json',
+            success:function (res) {
+                console.log(res);
+                if(res.success === true){
+//                    layer.msg(res.message);
+                    showTask(res.data);
+                }else if(res.success === false){
+                    //layer.alert(res.message)
+                }
+            },error:function (e) {
+                console.log(e);
+            }
+        });
+        //获取班级列表
+        if(studentData.classId !== null && studentData.classId !== 0 && studentData.classId !==undefined ){//已经加入了班级
+            $('.class-title').text(studentData.classes.name);
+            $.ajax({
+                url:cassUrl,
+                type:"post",
+                data:{classId:studentData.classId},
+                dataType:'json',
+                success:function (res) {
+                    console.log(res);
+                    if(res.success === true){
+                        layer.msg(res.message);
+                        showClass(res.data);
+                    }else if(res.success === false){
+                        layer.alert(res.message)
+                    }
+                },error:function (e) {
+                    console.log(e);
+                }
+            });
+        }else{//没有加入班级，需要加入班级
+            var html = '  <form id="login-form" class="mui-input-group">' +
+                '            <div class="mui-input-row">' +
+                '                <label>邀请码</label>' +
+                '                <input id="code" type="text" class="mui-input-clear mui-input" placeholder="请输入邀请码" data-input-clear="2"><span class="mui-icon mui-icon-clear mui-hidden"></span>' +
+                '            </div>' +
+                '         </form>'+
+                '         <div style="margin: 10px 0;">'+
+                '           <button id="addClass" style="padding: 8px 0;" href="/student/addClassIndex" class="mui-btn mui-btn-block mui-btn-primary" onclick="addClass()">加入班级</button>' +
+                '         </div>';
+            $('.class-title').append(html);
+        }
+
+    }
+    function showTask(data) {
+        var html = '';
+        for(var i = 0; i<data.length;i++){
+            var item = data[i];
+            var className = 'complete';
+            var text = '已完成';
+            var href = '/task/getCompleteTaskItem?taskId='+item.id+"&studentId="+studentData.id;
+            console.log(item);
+            var finish = item.isFinish;//是否完成
+            if(finish === null || finish === '' || finish.length === 0 || finish === undefined){
+                className = 'continue';
+                text = '未完成';
+                href = '/task/getTaskItem?taskId='+item.id;
+            }
+            var now = new Date();
+            var endTime = item.endTime;
+            var tempT = new Date(endTime);
+            if(now >= tempT.getTime()){//超过截止日期
+                if(text === '已完成'){//已经完成
+                    html +='<a href='+href+'>'+
+                        ' <div class="mui-card">\n' +
+                        '        <div class="mui-card-header">'+item.title+'<span class="'+className+'">'+text+'</span></div>\n' +
+                        '        <div class="mui-card-content">\n' +
+                        '            <div class="mui-card-content-inner">'+item.description+'</div>\n' +
+                        '        </div>\n' +
+                        '        <div class="mui-card-footer">' +
+                        '<span>题数：'+item.count+'</span>' +
+                        '<span style="text-align: right">截止时间：'+item.endTime+'</span>'+
+                        '</div>\n' +
+                        '    </div>'+
+                        '</a>';
+                }else{//已经截止
+                    html +='<div >'+
+                        ' <div class="mui-card">\n' +
+                        '        <div class="mui-card-header">'+item.title+'<span style="color: red">已截止</span></div>\n' +
+                        '        <div class="mui-card-content">\n' +
+                        '            <div class="mui-card-content-inner">'+item.description+'</div>\n' +
+                        '        </div>\n' +
+                        '        <div class="mui-card-footer">' +
+                        '<span>题数：'+item.count+'</span>' +
+                        '<span style="text-align: right">截止时间：'+item.endTime+'</span>'+
+                        '</div>\n' +
+                        '    </div>'+
+                        '</div>';
+                }
+            }else{//正常情况
+                html +='<a href='+href+'>'+
+                    ' <div class="mui-card">\n' +
+                    '        <div class="mui-card-header">'+item.title+'<span class="'+className+'">'+text+'</span></div>\n' +
+                    '        <div class="mui-card-content">\n' +
+                    '            <div class="mui-card-content-inner">'+item.description+'</div>\n' +
+                    '        </div>\n' +
+                    '        <div class="mui-card-footer">' +
+                    '<span>题数：'+item.count+'</span>' +
+                    '<span style="text-align: right">截止时间：'+item.endTime+'</span>'+
+                    '</div>\n' +
+                    '    </div>'+
+                    '</a>';
+            }
+
+        }
+        $('.task-index').empty().append(html);
+    }
+    function showClass(data) {
+        var html = '';
+        for(var i = 0 ;i<data.length ;i++){
+            var item = data[i];
+            var text = item.id ==1 ? '我' : '同学';
+            html = '' +
+                ' <li class="mui-table-view-cell">\n' +
+                '            <div class="mui-slider-cell">\n' +
+                '                <div class="oa-contact-cell mui-table">\n' +
+                '                    <div class="oa-contact-avatar mui-table-cell">\n' +
+                '                        <img style="max-height: 80%;max-width: 80%" src="'+item.headUrl+'"/>\n' +
+                '                    </div>\n' +
+                '                    <div class="oa-contact-content mui-table-cell">\n' +
+                '                        <div class="mui-clearfix">\n' +
+                '                            <h4 class="oa-contact-name">'+item.username+'</h4>\n' +
+                '                            <span class="oa-contact-position mui-h6">'+text+'</span>\n' +
+                '                        </div>\n' +
+                '                        <p class="oa-contact-email mui-h6">\n' +
+                '                            '+item.email+'' +
+                '                        </p>\n' +
+                '                    </div>\n' +
+                '                </div>\n' +
+                '            </div>\n' +
+                '        </li>';
+            $('.my-class').append(html);
+        }
+    }
+    function addClass() {
+        var code = $('#code').val();
+        if(code.length === 0 || code === ''){
+            layer.alert('邀请码不能为空');
+            return false;
+        }
+        $.ajax({
+            url:joinClass,
+            type:"post",
+            data:{code:code},
+            dataType:'json',
+            success:function (res) {
+                console.log(res);
+                if(res.success === true){
+                    layer.msg(res.message);
+                    console.log(res.data);
+                    studentData.classes = res.data[0];
+                    studentData.classId = res.data[0].id;
+                    sessionStorage.setItem(username,JSON.stringify(studentData));
+                    setTimeout(function () {
+                        location.reload();
+                    },1500);
+                }else if(res.success === false){
+                    layer.alert(res.message)
+                }
+            },error:function (e) {
+                console.log(e);
+            }
+        });
+    }
+    function goeasy() {
+        var goEasy = new GoEasy({
+            appkey: "BS-614cb2025e31430fb98a0644ba3f2bed"
+        });
+        goEasy.subscribe({
+            channel: "class"+studentData.classId,
+//            channel: "class6",
+            onMessage: function (message) {
+                console.log(message);
+                console.log(message.content);
+                var html = '<li class="mui-table-view-cell mui-media" onclick="remove(this)">\n' +
+                    '\t            <a href="javascript:;" class="point">\n' +
+                    '\t                <div class="mui-media-body">\n' +
+                    '\t                    <p class="mui-ellipsis">'+message.content+'</p>\n' +
+                    '\t                </div>\n' +
+                    '\t            </a>\n' +
+                    '\t        </li>';
+                $('.my-message').addClass('mui-badge');
+                var num = Number($('.my-message').text()) + 1;
+                $('.my-message').text(num);
+                $('.add-message').append(html);
+            }
+        });
+    }
+    function remove(that) {
+        $(that).remove();
+        var num = Number($('.my-message').text()) -1;
+        $('.my-message').text(num);
+        if(num === 0){
+            $('.my-message').text('');
+            $('.my-message').removeClass('mui-badge');
+        }
+    }
+</script>
+
+</body>
+</html>

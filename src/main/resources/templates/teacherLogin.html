@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>用户登录</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+    <link rel="stylesheet" href="mui/css/mui.min.css">
+    <style>
+        .ui-page-login,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            padding: 0px;
+        }
+        .mui-content{height: 100%;}
+
+        .area {
+            margin: 20px auto 0px auto;
+        }
+
+        .mui-input-group {
+            margin-top: 10px;
+        }
+
+        .mui-input-group:first-child {
+            margin-top: 20px;
+        }
+
+        .mui-input-group label {
+            width: 22%;
+        }
+
+        .mui-input-row label~input,
+        .mui-input-row label~select,
+        .mui-input-row label~textarea {
+            width: 78%;
+        }
+
+        .mui-checkbox input[type=checkbox],
+        .mui-radio input[type=radio] {
+            top: 6px;
+        }
+
+        .mui-content-padded {
+            margin-top: 25px;
+        }
+
+        .mui-btn {
+            padding: 10px;
+        }
+
+        .link-area {
+            display: block;
+            margin-top: 25px;
+            text-align: center;
+        }
+
+        .spliter {
+            color: #bbb;
+            padding: 0px 8px;
+        }
+
+        .oauth-area {
+            position: absolute;
+            bottom: 20px;
+            left: 0px;
+            text-align: center;
+            width: 100%;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        .oauth-area .oauth-btn {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            background-size: 30px 30px;
+            background-position: center center;
+            background-repeat: no-repeat;
+            margin: 0px 20px;
+            /*-webkit-filter: grayscale(100%); */
+            border: solid 1px #ddd;
+            border-radius: 25px;
+        }
+
+        .oauth-area .oauth-btn:active {
+            border: solid 1px #aaa;
+        }
+
+        .oauth-area .oauth-btn.disabled {
+            background-color: #ddd;
+        }
+
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <header class="mui-bar mui-bar-nav">
+        <h1 class="mui-title">教师登录</h1>
+    </header>
+    <div class="mui-content">
+        <form id="login-form" class="mui-input-group">
+            <div class="mui-input-row">
+                <label>账号</label>
+                <input id="account" type="text" class="mui-input-clear mui-input" placeholder="请输入账号" data-input-clear="2"><span class="mui-icon mui-icon-clear mui-hidden"></span>
+            </div>
+            <div class="mui-input-row">
+                <label>密码</label>
+                <input id="password" type="password" class="mui-input-clear mui-input" placeholder="请输入密码" data-input-clear="3"><span class="mui-icon mui-icon-clear mui-hidden"></span>
+            </div>
+            <!--<div class="mui-input-row">-->
+            <!--<label>验证码</label>-->
+            <!--<input id="verify" type="password" class="mui-input-clear mui-input" placeholder="请输入密码" data-input-clear="3"><span class="mui-icon mui-icon-clear mui-hidden"></span>-->
+            <!--<img src="/getVerifyCode">-->
+            <!--</div>-->
+        </form>
+        <div class="mui-content-padded">
+            <button id="login" class="mui-btn mui-btn-block mui-btn-primary">登录</button>
+            <div class="link-area"><a id="reg" href="/teacherRegister">注册账号</a> <span class="spliter">|</span> <a href="/login" id="forgetPassword">学生登录</a>
+            </div>
+        </div>
+        <div class="mui-content-padded oauth-area">
+
+        </div>
+    </div>
+</div>
+</body>
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="mui/js/mui.min.js"></script>
+<script src="layer/layer.js"></script>
+<script>
+    var index;
+    var successUrl = "/teacher/index";
+    $(function () {
+        $('.mui-btn').on('click',login);
+    });
+    function login() {
+        var username = $('#account').val();
+        var password = $('#password').val();
+        if(username ==='' || username.length === 0){
+            layer.alert('账号不能为空');
+            return;
+        }
+        if(password ==='' || password.length === 0){
+            layer.alert('密码不能为空');
+            return;
+        }
+        $.ajax({
+            url:'/teacher/login',
+            type:'post',
+            data:{username:username,password:password},
+            dataType:'json',
+            beforeSend:function () {
+                index = layer.load(0, {shade: false});
+            },
+            complete:function () {
+                layer.close(index);
+            },success:function (res) {
+                console.log(res);
+                if(res.success === true){
+                    location.href = successUrl;
+                }else if(res.success === false){
+                    layer.alert(res.message);
+                }
+            },error:function (e) {
+                console.log(e);
+                alert('网络错误');
+            }
+        });
+    }
+</script>
+</html>

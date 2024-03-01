@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title th:text="出题"></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+    <link rel="stylesheet" href="../mui/css/mui.min.css">
+    <style>
+
+    </style>
+</head>
+
+<body>
+<div class="mui-content">
+    <nav th:include="teacher/tabbar::nav-subject" class="mui-bar mui-bar-tab"></nav>
+    <header class="mui-bar mui-bar-nav">
+        <h1 class="mui-title">出题</h1>
+        <!--<a class="mui-icon mui-icon-plus mui-pull-right" th:href="@{'/teacher/addClass'}"></a>-->
+    </header>
+    <div style="padding-top: 44px;">
+        <form class="mui-input-group">
+            <div class="mui-input-group" id="input_example">
+                <div class="mui-input-row">
+                    <label>输入题目</label>
+                    <input id="subject" type="text" class="mui-input-clear" placeholder="请输入题目">
+                </div>
+                <div class="mui-input-row">
+                    <label>输入答案</label>
+                    <input id="answer" type="text" class="mui-input-clear" placeholder="请输入答案">
+                </div>
+                <div class="mui-input-row">
+                    <label>难度系数:</label>
+                    <input id="difficult" type="number" class="mui-input-clear" placeholder="1-5之间">
+                </div>
+                <div class="mui-button-row">
+                    <button id="submitSubject" type="button" class="mui-btn mui-btn-primary">提交</button>
+                    <button type="button" class="mui-btn mui-btn-danger">取消</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="../js/jquery-3.3.1.min.js"></script>
+<script src="../layer/layer.js"></script>
+<script>
+
+    var addSubjectUrl = '/teacher/addSubject';
+    $(function () {
+        $('#submitSubject').on('click', submitSubject);
+    });
+    function submitSubject() {
+        var check = true;
+        $("#input_example input").each(function () {
+            //若当前input为空，则alert提醒
+            if (!this.value || this.value.trim() == "") {
+                var label = this.previousElementSibling;
+                layer.alert(label.innerText+"不允许为空");
+                check = false;
+                return false;
+            }
+        }); //校验通过，继续执行业务逻辑
+        if (check) {
+            addSubject();
+        }
+    }
+
+    function addSubject() {
+        var difficult = $('#difficult').val();
+        if(difficult === ''){
+            layer.alert('请输入难度系数');
+            return false;
+        }
+        if(difficult <1 || difficult >5){
+            layer.alert('请输入1-5之间的整数');
+            return false;
+        }
+        var subject = $('#subject').val();
+        var answer = $('#answer').val();
+
+        var data = {
+            question: subject,
+            answer: answer,
+            difficult:difficult,
+            status: 1
+        };
+        $.ajax({
+            url: addSubjectUrl,
+            type: "post",
+            data: JSON.stringify(data),
+            contentType: 'application/json;charset=UTF-8',
+            dataType: 'json',
+            beforeSend: function () {
+                index = layer.load(0, {shade: false});
+            }, complete: function () {
+                layer.close(index);
+            }, success: function (res) {
+                console.log(res);
+                if (res.success === true) {
+                    layer.msg(res.message);
+                    clearData();
+                } else if (res.success === false) {
+                    layer.msg(res.message);
+                }
+            }, error: function (e) {
+                console.log(e);
+                layer.alert('网络错误!')
+            }
+        });
+    }
+    function clearData() {
+        $('#subject').val('');
+       $('#answer').val('');
+    }
+</script>
+</body>
+</html>

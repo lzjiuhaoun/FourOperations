@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+        <!DOCTYPE mapper
+                PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+                "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.lzj66.dao.ClassesDao">
+    <!--目的：为Dao接口方法提供SQL语句-->
+    <!--映射实体对象-->
+    <resultMap id="ClassResultMap" type="cn.lzj66.entity.Classes">
+        <id property="id" column="id"/>
+        <result property="uuid" column="uuid"/>
+        <result property="name" column="name"/>
+        <result property="desc" column="desc"/>
+        <result property="headUrl" column="headUrl"/>
+        <result property="count" column="count"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="createTime"/>
+    </resultMap>
+    <!--<select id="getClassesById" resultMap="ClassResultMap">-->
+    <!--</select>-->
+    <select id="getClassesById" resultType="cn.lzj66.entity.Classes">
+        SELECT * from classes WHERE id = #{id}
+    </select>
+    <select id="getIdByUuid" resultType="cn.lzj66.entity.Classes">
+        SELECT * FROM classes WHERE uuid = #{uuid}
+    </select>
+
+    <insert id="addClass" parameterType="cn.lzj66.entity.Classes" keyProperty="id" useGeneratedKeys="true">
+        INSERT  INTO classes(uuid,name,remark) VALUES (#{uuid},#{name},#{remark})
+    </insert>
+
+    <select id="getClassByTeacherAndId" resultType="cn.lzj66.entity.Classes">
+        SELECT a.* FROM classes as a INNER JOIN teacher_class as b on  a.id = b.classId AND teacherId = #{teacherId}
+    </select>
+    <update id="updateCountById">
+        UPDATE classes SET count = count +1 WHERE id = #{classId}
+    </update>
+</mapper>

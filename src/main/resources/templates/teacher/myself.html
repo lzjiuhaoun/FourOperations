@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>我的主页</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+    <link rel="stylesheet" href="../mui/css/mui.min.css">
+    <style>
+        .gg{
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        img{
+            width: auto;
+            height: auto;
+            max-height: 100%;
+            max-width: 100%;
+            z-index:1 ;
+        }
+        /*以下头像区*/
+        .head{
+            position: absolute;/*z-dex只在定位起作用，并且不浮动*/
+            /*float: left;*/
+            width: 60px;
+            height: 60px;
+            background-image: url(../img/man_head.jpg);
+
+            background-size: cover;
+            display: block;
+            border-radius: 50%;
+            -webkit-border-radius: 50px;
+            -moz-border-radius: 50px;;
+            /*box-shadow: 2px 2px 2px white;*//*阴影*/
+            border: 1px solid white;
+            z-index: 2;
+            margin: -70px 30px;
+        }
+        .xxx{
+            /*float: left;*/
+            color: white;
+            margin: -50px 100px;
+            z-index: 3;
+        }
+        .inter{
+            width: 200px;
+            height: 200px;
+            margin: 100px 80px;
+        }
+        .body1 .inter ul{
+            list-style: none;
+        }
+        .body1 .inter ul li{
+            float: left;
+            width: 200px;
+            height: 20px;
+            margin: 8px;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+<div class="mui-content">
+    <nav th:include="teacher/tabbar::nav-self" class="mui-bar mui-bar-tab"></nav>
+    <header class="mui-bar mui-bar-nav">
+        <!--<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>-->
+        <h1 class="mui-title">我的</h1>
+    </header>
+    <div class="gg" style="padding-top: 44px;">
+        <img  src="../img/sunset.jpg" alt=""/>
+    </div>
+    <div class="head">
+    </div>
+    <div class="xxx">
+        <span th:text="${teacher.username}">温良</span>
+    </div>
+
+    <div class="body1">
+        <div class="inter">
+            <ul>
+                <li class="cl">
+                    <span class="mui-icon mui-icon mui-icon-email"></span>
+                    <a href="#">私信</a>
+                </li>
+                <li class="cl">
+                    <span class="mui-icon mui-icon mui-icon-chatbubble"></span>
+                    <a href="#">通知</a>
+                </li>
+                <li class="cl">
+                    <span class="mui-icon mui-icon mui-icon-gear"></span>
+                    <a href="#">设置</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+</html>
