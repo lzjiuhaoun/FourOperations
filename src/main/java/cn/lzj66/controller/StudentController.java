@@ -32,7 +32,7 @@ public class StudentController {
         return "student/index";
     }
 
-    @ResponseBody
+    @ResponseBody //返回json数据
     @RequestMapping(value = "/login")
     public BaseResponse<Student> studentLogin(HttpServletRequest request, Login login) {
         if ("".equals(login.getUsername()) || login.getUsername() == null) {

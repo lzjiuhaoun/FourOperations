@@ -98,16 +98,16 @@ public class TeacherController {
         map.addAttribute("students",students);
         map.addAttribute("name",name);
         map.addAttribute("uuid",uuid);
-        return "/teacher/classDetail";
+        return "teacher/classDetail";
     }
     @RequestMapping(value = "/addClass")
     public String addClass(){
-        return "/teacher/addClass";
+        return "teacher/addClass";
     }
 
     @RequestMapping(value = "/subject")
     public String subject(){
-        return "/teacher/subject";
+        return "teacher/subject";
     }
     @RequestMapping(value = "/message")
     public String teacherMessage(){
@@ -178,7 +178,7 @@ public class TeacherController {
         List<Question> list = teacherService.createQuestion(task.getDifficult(),task.getType(),task.getCount());
         map.addAttribute("questions",list);
         map.addAttribute("task",task);
-        return "/teacher/checkTask";
+        return "teacher/checkTask";
     }
     /**
      * 创建作业接口

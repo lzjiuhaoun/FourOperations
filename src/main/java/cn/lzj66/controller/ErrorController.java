@@ -9,18 +9,18 @@ public class ErrorController {
 
     @RequestMapping("/404")
     public String error404(){
-        return "/error/404";
+        return "error/404";
     }
     @RequestMapping("/403")
     public String error403(){
-        return "/error/403";
+        return "error/403";
     }
     @RequestMapping("/500")
     public String error500(){
-        return "/error/500";
+        return "error/500";
     }
     @RequestMapping("/501")
     public String error501(){
-        return "/error/501";
+        return "error/501";
     }
 }

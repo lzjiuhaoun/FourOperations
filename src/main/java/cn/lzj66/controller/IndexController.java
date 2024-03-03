@@ -12,7 +12,7 @@ public class IndexController {
 
     @RequestMapping(value = "/")
     private String show(){
-        return "/show";
+        return "show";
     }
     @Value("${goeasy.key.super}")
     private String superKey;
@@ -21,26 +21,26 @@ public class IndexController {
 
     @RequestMapping("/login")
     public String login(){
-        return "/login";
+        return "login";
     }
     @RequestMapping("/register")
     public String register(){
-        return "/register";
+        return "register";
     }
     @RequestMapping("/teacherLogin")
     public String teacherLogin(){
-        return  "/teacherLogin";
+        return  "teacherLogin";
     }
     @RequestMapping("/teacherRegister")
     public String teacherRegister(){
-        return "/teacherRegister";
+        return "teacherRegister";
     }
     @RequestMapping(value = "/goeasy/index")
     public String goeasyIndex(){
-        return "/goeasy/index";
+        return "goeasy/index";
     }
     @ResponseBody
-    @RequestMapping(value = "/goeasy/push")
+    @RequestMapping(value = "goeasy/push")
     public String goeasyPush(){
         GoEasy goEasy = new GoEasy(regionHost,superKey);
         goEasy.publish("class6","你们好啊");

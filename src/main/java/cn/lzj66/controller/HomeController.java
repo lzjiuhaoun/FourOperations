@@ -36,9 +36,5 @@ public class HomeController {
 //    public List<Boolean> getAnswer(){
 //        return null;
 //    }
-    /**
-     * idea快捷键 main => psvm
-     * for =>fori
-     * system.out.println => sout
-     */
+
 }
